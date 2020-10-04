@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Ford Lumber Time Tally</title>
+</head>
+<body>
+    <a href="file:///C:/Users/Home/Desktop/TimeTally%20copy/HTML/Employee%20Log%20In.html" style="color:black"> <button>Log Out</button></a>
+    <h1>Weekly Pay Period:</h1>
+    <!--<form>--> <!--No form is needed because isn't makeing a request-->
+    <p>
+        <button>Start Date</button>: <input type="date" name="start_date"> <button>End Date</button>: <input type="date" name="end_date">
+    </p>
+    <!-- Here will be where the week day controll will be wrote by javascript -->
+    <div id="content"></div>
+
+    <!--</form>-->
+
+    <h4>
+        Total Hours: <input type="time" id="result" />
+    </h4>
+
+    <button onclick="sumAll()">Submit</button> <button>Update</button> <button onclick="clearAll()">Reset</button>
+
+    <script type="text/javascript">
+        //this function load after full page load at browser
+        window.onload = function () {
+            var htmlString = '';//HTML content of weekday setup
+
+            var week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            //Development trick to construct more faster
+            for (var i = 0; i < 6; i++) {
+                htmlString +=
+                    '<li>' +
+                    '<p>' + week[i] + ':' +
+                    '<button type="button" id="' + i + '_In" onclick="setTime(this)">In</button> <input type="time" id="' + i + '_timeIn"/> ' +
+                    '<button type="button" id="' + i + '_Out" onclick="setTime(this)">Out</button> <input type="time" id="' + i + '_timeOut"/>' +
+                    '</p>' +
+                    '</p>' +
+                    '</li>';
+            }
+            htmlString = '<ul>' + htmlString + '</ul>';
+
+            //Associate inside the div id=content the html content genarated
+            document.querySelector('#content').innerHTML = htmlString;
+        };
+
+        //the action who wrote the time in input field
+        /*
+         * In every button generated in javascript byt the function above will be assign with
+         * onclick setTime(this) "this" in this case means the current element
+         */
+        function setTime(e) {
+            var date = new Date();
+            var element = e.id.split('_')[0] + "_time" + e.id.split('_')[1]; //get register of the element
+            document.getElementById(element).value = (digitsFormat(date.getHours()) + ":" + digitsFormat(date.getMinutes()));//Wrote in input field
+        }
+
+        //time digit normalization i.e: if time is 5 minutes the code wasn't wrote 05, so this normalize the value to alwats keep 2 digits
+        function digitsFormat(value) {
+            return ("0" + value).slice(-2);
+        }
+
+
+        //Sum all time content diference so can get full time difference of all fields at once
+        function sumAll() {
+            var hours = 0;
+            var allInputs = document.querySelectorAll('input[type="time"]');
+            for (var i = 1; i < allInputs.length; i += 2) {
+                if (allInputs[i].value != '') {
+                    //Convert hours to seconds and calculate the diference
+                    hours += (getSeconds(allInputs[i].value) - getSeconds(allInputs[i - 1].value));
+                }
+            }
+                        //get all seconds to hour                   //get the remaining seconds (under 60)
+            var result = digitsFormat(parseInt(hours / 60)) + ':' + digitsFormat(parseInt(hours % 60));
+            alert(result);
+            document.getElementById('result').value = result;
+        }
+
+        //Convert hours to seconds
+        function getSeconds(e) {
+            var tmp = e.split(':');
+            return parseInt(tmp[0]) * 60 + parseInt(tmp[1]);
+        }
+
+        //Clear all fields
+        function clearAll() {
+            var allInputs = document.querySelectorAll('input[type="time"]');
+            for (var i = 0; i < allInputs.length; i++) {
+                allInputs[i].value = '';
+            }
+        }
+    </script>
+</body>
+</html>
